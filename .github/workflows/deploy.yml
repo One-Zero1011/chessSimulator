@@ -24,9 +24,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: 'npm'
+          # cache: 'npm' 옵션은 package-lock.json이 없으면 에러가 발생하므로 제거합니다.
       - name: Install dependencies
-        run: npm ci
+        # npm ci는 lock 파일이 필수이므로, lock 파일이 없을 때도 동작하는 npm install로 변경합니다.
+        run: npm install
       - name: Build
         run: npm run build
       - name: Upload artifact
