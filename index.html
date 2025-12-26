@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>체스소나 시뮬레이터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+      window.process = {
+        env: {
+          NODE_ENV: 'production'
+        }
+      };
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #fafafa; /* Zinc 50 */
+        color: #18181b; /* Zinc 900 */
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      
+      /* Emotion Animations */
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-4px) rotate(-4deg); }
+        75% { transform: translateX(4px) rotate(4deg); }
+      }
+      .animate-shake {
+        animation: shake 0.4s ease-in-out infinite;
+      }
+
+      @keyframes shiver {
+        0% { transform: translate(1px, 1px); }
+        25% { transform: translate(-1px, -2px); }
+        50% { transform: translate(-2px, 1px); }
+        75% { transform: translate(2px, -1px); }
+        100% { transform: translate(-1px, 1px); }
+      }
+      .animate-shiver {
+        animation: shiver 0.2s linear infinite;
+      }
+
+      /* Tactic Animations */
+      @keyframes pop-in {
+        0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+        50% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+      .animate-tactic-pop {
+        animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+
+      @keyframes slide-slash {
+        0% { transform: translateX(-100%) skewX(-20deg); opacity: 0; }
+        100% { transform: translateX(0) skewX(-20deg); opacity: 1; }
+      }
+      .animate-slash {
+        animation: slide-slash 0.2s ease-out forwards;
+      }
+
+      @keyframes pulse-red {
+        0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+        70% { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+      }
+      .animate-pulse-red {
+        animation: pulse-red 1s infinite;
+      }
+
+      .filter-sepia-red {
+        filter: sepia(1) hue-rotate(-50deg) saturate(3);
+      }
+      .filter-blue-gray {
+        filter: grayscale(0.8) sepia(0.2) hue-rotate(180deg);
+      }
+      
+      /* Glitch effect for checkmate */
+      .glitch {
+        position: relative;
+      }
+      .glitch::before,
+      .glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .glitch::before {
+        left: 2px;
+        text-shadow: -1px 0 #ff00c1;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .glitch::after {
+        left: -2px;
+        text-shadow: -1px 0 #00fff9;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      @keyframes glitch-anim {
+        0% { clip: rect(13px, 9999px, 81px, 0); }
+        20% { clip: rect(69px, 9999px, 14px, 0); }
+        40% { clip: rect(6px, 9999px, 63px, 0); }
+        60% { clip: rect(93px, 9999px, 78px, 0); }
+        80% { clip: rect(38px, 9999px, 6px, 0); }
+        100% { clip: rect(81px, 9999px, 2px, 0); }
+      }
+      @keyframes glitch-anim2 {
+        0% { clip: rect(83px, 9999px, 93px, 0); }
+        20% { clip: rect(4px, 9999px, 6px, 0); }
+        40% { clip: rect(31px, 9999px, 13px, 0); }
+        60% { clip: rect(66px, 9999px, 98px, 0); }
+        80% { clip: rect(10px, 9999px, 49px, 0); }
+        100% { clip: rect(7px, 9999px, 71px, 0); }
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #e4e4e7;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #d4d4d8;
+      }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "chess.js": "https://esm.sh/chess.js@^1.4.0",
+    "react-chessboard": "https://esm.sh/react-chessboard@^5.8.6",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.3.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

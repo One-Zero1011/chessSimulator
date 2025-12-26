@@ -1,0 +1,5 @@
+{
+  "name": "체스소나 시뮬레이터",
+  "description": "사용자 지정 MBTI와 관계를 가진 두 AI 페르소나가 스톡피쉬 엔진을 사용하여 대결하는 체스 시뮬레이터입니다.",
+  "requestFramePermissions": []
+}
