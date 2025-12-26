@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "chess.js": "1.0.0-beta.8",
+    "chess.js": "^1.0.0",
     "lucide-react": "^0.263.1",
     "react": "^18.2.0",
     "react-chessboard": "^4.3.0",
